@@ -1,0 +1,8 @@
+.aside_container_when_hovered {
+  width: 248px;
+  transition: all 500ms ease-in-out;
+}
+.aside_container_not_hovered {
+  width: 88px;
+  transition: all 500ms ease-in-out;
+}

@@ -1,0 +1,120 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+.featured::-webkit-scrollbar {
+  display: none; /* Hide the scrollbar in WebKit browsers */
+}
+
+@font-face {
+  font-family: 'Roboto Regular';
+  src: url('../fonts/Roboto-Regular.ttf') format('woff2');
+  /* Add additional font formats (e.g., .ttf, .otf) if needed */
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Roboto Medium';
+  src: url('../fonts/Roboto-Medium.ttf') format('woff2');
+  /* Add additional font formats (e.g., .ttf, .otf) if needed */
+  font-weight: 500;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Roboto Italic';
+  src: url('../fonts/Roboto-MediumItalic.ttf') format('woff2');
+  /* Add additional font formats (e.g., .ttf, .otf) if needed */
+  font-weight: 500;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Roboto Thin';
+  src: url('../fonts/Roboto-Thin.ttf') format('woff2');
+  /* Add additional font formats (e.g., .ttf, .otf) if needed */
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Roboto ThinItalic';
+  src: url('../fonts/Roboto-ThinItalic.ttf') format('woff2');
+  /* Add additional font formats (e.g., .ttf, .otf) if needed */
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Roboto Light';
+  src: url('../fonts/Roboto-Italic.ttf') format('woff2');
+  /* Add additional font formats (e.g., .ttf, .otf) if needed */
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Roboto Light';
+  src: url('../fonts/Roboto-LightItalic.ttf') format('woff2');
+  /* Add additional font formats (e.g., .ttf, .otf) if needed */
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Roboto BoldItalic';
+  src: url('../fonts/Roboto-Bold.ttf') format('woff2');
+  /* Add additional font formats (e.g., .ttf, .otf) if needed */
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Roboto Black';
+  src: url('../fonts/Roboto-Black.ttf') format('woff2');
+  /* Add additional font formats (e.g., .ttf, .otf) if needed */
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Roboto BlackItalic';
+  src: url('../fonts/Roboto-BlackItalic.ttf') format('woff2');
+  /* Add additional font formats (e.g., .ttf, .otf) if needed */
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Roboto Bold';
+  src: url('../fonts/Roboto-Bold.ttf') format('woff2');
+  /* Add additional font formats (e.g., .ttf, .otf) if needed */
+  font-weight: 500;
+  font-style: normal;
+}
+
+/* Example usage */
+/* h1 {
+    font-family: 'CustomFontName', sans-serif;
+  }
+   */
+
+.animated-modal {
+  z-index: 100;
+}
+
+.animated-modal {
+  @apply absolute top-40 left-56 transform -translate-x-1/2 -translate-y-1/2 bg-white p-4 pt-4 rounded-md shadow-lg; /* Add Tailwind CSS classes for styling */
+  @apply transition-opacity duration-500; /* Apply the transition for opacity */
+}
+.animated-dropdown {
+  z-index: 100;
+}
+
+.animated-dropdown {
+  @apply absolute transform -translate-x-1/2 -translate-y-1/2 top-[8rem]; /* Add Tailwind CSS classes for styling */
+  @apply transition-opacity duration-500; /* Apply the transition for opacity */
+}
+
+.animated-modal.hidden {
+  @apply opacity-0 pointer-events-none; /* Hide the modal when not shown */
+}
+

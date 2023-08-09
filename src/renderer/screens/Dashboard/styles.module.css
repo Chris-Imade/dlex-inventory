@@ -1,0 +1,13 @@
+.dashboard {
+  overflow: auto;
+}
+
+.dashboard::-webkit-scrollbar {
+  display: none; /* Hide the scrollbar in WebKit browsers */
+}
+
+/* Optional: Customize scrollbar appearance for Firefox */
+.dashboard {
+  scrollbar-width: none; /* Hide the scrollbar in Firefox */
+  -ms-overflow-style: none; /* Hide the scrollbar in IE and Edge */
+}
