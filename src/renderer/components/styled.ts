@@ -20,5 +20,5 @@ export const fonts = {
   },
 };
 
-export const baseURL = "https://0f8b-160-152-11-255.ngrok-free.app";
+export const baseURL = "https://dlex-inventory.cyclic.app";
 export const accessToken = localStorage.getItem('token');
