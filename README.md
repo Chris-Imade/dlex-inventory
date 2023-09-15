@@ -1,4 +1,4 @@
-![Dlex Insight](https://imgur.com/V9xFI3R)
+![Dlex Insight](./assets/images/dlex.png)
 
 ## Introduction
 
