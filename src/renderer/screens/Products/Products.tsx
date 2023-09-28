@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import styles from './styles.module.css';
 import { Link } from 'react-router-dom';
-import { accessToken, baseURL, colors, fonts } from 'renderer/components/styled';
+import {
+  accessToken,
+  baseURL,
+  colors,
+  fonts,
+} from 'renderer/components/styled';
 import { products } from 'renderer/components/DATA';
 import { images } from '../../../../assets/images';
 import { useSelector } from 'react-redux';
@@ -16,6 +21,8 @@ const Products = () => {
   const [error, setError] = useState<any | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [showStatus, setShowStatus] = useState<boolean>(false);
+  const userId = localStorage.getItem('userId');
+  const parsedUserId = userId && JSON.parse(userId);
 
   console.log();
 
@@ -23,67 +30,68 @@ const Products = () => {
   // Then I check to see if they contain any of the content from search query.
 
   const handleSearch = (searchQuery: string) =>
-  actualProducts?.filter((product: any) =>
-    Object.values(product).some(
-      (value) => typeof value === 'string' && value.toLowerCase().includes(searchQuery?.toLowerCase())
-    )
-  );
+    actualProducts?.filter((product: any) =>
+      Object.values(product).some(
+        (value) =>
+          typeof value === 'string' &&
+          value.toLowerCase().includes(searchQuery?.toLowerCase())
+      )
+    );
 
   useEffect(() => {
     // Whenever searchQuery changes, update the products state
     const filteredProducts = handleSearch(searchQuery);
 
-    if(searchQuery?.length > 0) {
+    if (searchQuery?.length > 0) {
       setProducts(filteredProducts);
     } else {
       setProducts(actualProducts);
     }
   }, [searchQuery]);
 
-
-  const handleDeleteProduct = async(productId: string) => {
-    if(navigator.onLine) {
+  const handleDeleteProduct = async (productId: string) => {
+    if (navigator.onLine) {
       alert('⛔️Are you sure about this?⛔️');
 
       try {
-          const response = await fetch(`${baseURL}${`/api/v1/products/${productId}`}`, {
-            method: "DELETE",
+        const response = await fetch(
+          `${baseURL}/api/v1/products/${productId}?userId=${parsedUserId}`,
+          {
+            method: 'DELETE',
             headers: {
               Authorization: `Token ${accessToken}`,
-              "Content-Type": "application/json",
-            }
-          });
-          if (!response.ok) {
-            throw new Error('Network response was not ok');
+              'Content-Type': 'application/json',
+            },
           }
-          const result = await response.json();
-          setData(result);
-          setError(null);
-          setLoading(false);
-          setShowStatus(true);
-          location.reload();
+        );
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const result = await response.json();
+        setData(result);
+        setError(null);
+        setLoading(false);
+        setShowStatus(true);
+        location.reload();
       } catch (error: any) {
-          setError(error.message);
-          setData(null);
-          setLoading(false);
-          setShowStatus(true);
-          console.log('Error Response Data:', error.message); // Log the error message
+        setError(error.message);
+        setData(null);
+        setLoading(false);
+        setShowStatus(true);
+        console.log('Error Response Data:', error.message); // Log the error message
       }
     } else {
-      alert("You are not online: These changes can only be made when online!");
+      alert('You are not online: These changes can only be made when online!');
     }
-  }
-
-
+  };
 
   useEffect(() => {
     const delayedComponent = setTimeout(() => {
       setShowStatus(false);
-  }, 3000);
+    }, 3000);
 
     return () => clearTimeout(delayedComponent);
   }, [showStatus]);
-
 
   return (
     <div
@@ -91,7 +99,8 @@ const Products = () => {
     >
       {/* Header */}
       <div className="flex justify-between my-5 flex-col lg:flex-row items-center">
-        <h3 className='mb-4 md:mb-0'
+        <h3
+          className="mb-4 md:mb-0"
           style={{
             fontSize: 24,
             fontFamily: fonts.family.medium,
@@ -138,13 +147,15 @@ const Products = () => {
 
       {products?.length ? (
         <div className="flex flex-wrap">
-          {products?.map((item: Product, _:number) => {
+          {products?.map((item: Product, _: number) => {
             const imageFormat = useImageFormat(item.imageFormat);
 
             return (
               <div
                 key={_}
-                className={`relative border-solid border-[1px] border-slate-200 rounded-lg p-3 hover:shadow-md shadow-sm bg-white flex max-w-[35rem] min-w-[35rem] ${_ % 2 !== 0 ? 'lg:ml-[30px]' : 0}`}
+                className={`relative border-solid border-[1px] border-slate-200 rounded-lg p-3 hover:shadow-md shadow-sm bg-white flex max-w-[35rem] min-w-[35rem] ${
+                  _ % 2 !== 0 ? 'lg:ml-[30px]' : 0
+                }`}
                 style={{
                   marginTop: 20,
                 }}
@@ -179,21 +190,36 @@ const Products = () => {
                       ₦{item?.discountPrice}
                     </span>
                   </h4>
-                  <h5>
-                    Original Price: ₦{item?.price}
-                  </h5>
+                  <h5>Original Price: ₦{item?.price}</h5>
                 </div>
 
-                <div className='flex'>
-                  <button onClick={() => handleDeleteProduct(item?._id as string)} className='absolute right-4 top-4'>
-                    <img width={24} height={24} src={images.delete} alt="delete" />
+                <div className="flex">
+                  <button
+                    onClick={() => handleDeleteProduct(item?._id as string)}
+                    className="absolute right-4 top-4"
+                  >
+                    <img
+                      width={24}
+                      height={24}
+                      src={images.delete}
+                      alt="delete"
+                    />
                   </button>
-                  <Link to={'/edit-product'} state={{ product: item }} className='absolute right-14 top-4'>
-                    <img width={24} height={24} src={images.edit} alt="delete" />
+                  <Link
+                    to={'/edit-product'}
+                    state={{ product: item }}
+                    className="absolute right-14 top-4"
+                  >
+                    <img
+                      width={24}
+                      height={24}
+                      src={images.edit}
+                      alt="delete"
+                    />
                   </Link>
                 </div>
               </div>
-            )
+            );
           })}
         </div>
       ) : (
@@ -216,20 +242,45 @@ const Products = () => {
         </div>
       )}
       {showStatus && (
-            <div className='flex justify-center items-center w-full'>
-              <div className={`absolute bottom-5 rounded-md p-2 font-semibold ${data && "bg-green-300"} ${error && "bg-orange-300"}`}>
-                  {error && <p className='text-black' style={{ fontFamily: fonts.family.medium}}>{error}</p>}
-                  {data?.status === 200 && <p className='text-black' style={{ fontFamily: fonts.family.medium}}>{data.detail}</p>}
-              </div>
-            </div>
-        )}
+        <div className="flex justify-center items-center w-full">
+          <div
+            className={`absolute bottom-5 rounded-md p-2 font-semibold ${
+              data && 'bg-green-300'
+            } ${error && 'bg-orange-300'}`}
+          >
+            {error && (
+              <p
+                className="text-black"
+                style={{ fontFamily: fonts.family.medium }}
+              >
+                {error}
+              </p>
+            )}
+            {data?.status === 200 && (
+              <p
+                className="text-black"
+                style={{ fontFamily: fonts.family.medium }}
+              >
+                {data.detail}
+              </p>
+            )}
+          </div>
+        </div>
+      )}
 
       {loading && (
-          <div className='flex justify-center items-center w-full'>
-            <div className={`absolute bottom-5 rounded-md p-2 font-semibold bg-blue-800`}>
-                <p className='text-black' style={{ fontFamily: fonts.family.medium}}>Loading...</p>
-            </div>
+        <div className="flex justify-center items-center w-full">
+          <div
+            className={`absolute bottom-5 rounded-md p-2 font-semibold bg-blue-800`}
+          >
+            <p
+              className="text-black"
+              style={{ fontFamily: fonts.family.medium }}
+            >
+              Loading...
+            </p>
           </div>
+        </div>
       )}
     </div>
   );

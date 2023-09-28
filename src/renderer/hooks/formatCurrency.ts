@@ -7,7 +7,10 @@ export const formatToCurrency = (value: number | bigint): string => {
   return formatter.format(value);
 };
 
-export const formatToCurrencySubTotal = (value: number | bigint, power: number): string => {
+export const formatToCurrencySubTotal = (
+  value: number | bigint,
+  power: number
+): string => {
   const formatter = new Intl.NumberFormat('en-NG', {
     style: 'currency',
     currency: 'NGN',

@@ -10,21 +10,25 @@ import { images } from '../../../../assets/images';
 
 const Transactions = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const actualTransactions = useSelector((state: AppState) => state.data.transactions);
+  const actualTransactions = useSelector(
+    (state: AppState) => state.data.transactions
+  );
   const [transactions, setTransactions] = useState<any>();
 
   const handleSearch = (searchQuery: string) =>
-  actualTransactions?.filter((product: any) =>
-    Object.values(product).some(
-      (value) => typeof value === 'string' && value.toLowerCase().includes(searchQuery?.toLowerCase())
-    )
-  );
+    actualTransactions?.filter((product: any) =>
+      Object.values(product).some(
+        (value) =>
+          typeof value === 'string' &&
+          value.toLowerCase().includes(searchQuery?.toLowerCase())
+      )
+    );
 
   useEffect(() => {
     // Whenever searchQuery changes, update the products state
     const filteredProducts = handleSearch(searchQuery);
 
-    if(searchQuery?.length > 0) {
+    if (searchQuery?.length > 0) {
       setTransactions(filteredProducts);
     } else {
       setTransactions(actualTransactions);
@@ -36,7 +40,8 @@ const Transactions = () => {
       className={`${styles.dashboard} bg-[#F8F8FA] w-[93.8vw] h-[100vh] py-[48px] px-[49px]`}
     >
       <div className="flex justify-between my-5 flex-col lg:flex-row items-center">
-        <h3 className='mb-4 md:mb-0'
+        <h3
+          className="mb-4 md:mb-0"
           style={{
             fontSize: 24,
             fontFamily: fonts.family.medium,
@@ -84,13 +89,14 @@ const Transactions = () => {
       {/* Transaction Banner Component */}
       <Banner />
 
-
       <div className="pb-6">
-        {transactions?.length ? transactions?.map((item: Transaction, _:number) => (
-          <div className="my-4" key={_}>
-            <Transaction item={item} />
-          </div>
-        )) : (
+        {transactions?.length ? (
+          transactions?.map((item: Transaction, _: number) => (
+            <div className="my-4" key={_}>
+              <Transaction item={item} />
+            </div>
+          ))
+        ) : (
           <div className="flex justify-center items-center h-full relative mt-[12rem]">
             <div
               className="border-dashed border-[3px] p-12"
@@ -112,19 +118,19 @@ const Transactions = () => {
 
       {transactions && transactions?.length > 7 && (
         <div className="w-full flex justify-center items-center">
-        <div className="rounded-lg px-3 bg-white flex hover:shadow-md shadow-sm">
-          <button className="p-2 hover:bg-gray-200 rounded-full w-7 h-7 flex justify-center items-center mx-3 my-1">
-            1
-          </button>
-          <button className="p-2 hover:bg-gray-200 rounded-full w-7 h-7 flex justify-center items-center mx-3 my-1">
-            2
-          </button>
-          <div>...</div>
-          <button className="p-2 hover:bg-gray-200 rounded-full w-7 h-7 flex justify-center items-center mx-3 my-1">
-            10
-          </button>
+          <div className="rounded-lg px-3 bg-white flex hover:shadow-md shadow-sm">
+            <button className="p-2 hover:bg-gray-200 rounded-full w-7 h-7 flex justify-center items-center mx-3 my-1">
+              1
+            </button>
+            <button className="p-2 hover:bg-gray-200 rounded-full w-7 h-7 flex justify-center items-center mx-3 my-1">
+              2
+            </button>
+            <div>...</div>
+            <button className="p-2 hover:bg-gray-200 rounded-full w-7 h-7 flex justify-center items-center mx-3 my-1">
+              10
+            </button>
+          </div>
         </div>
-      </div>
       )}
     </div>
   );

@@ -1,6 +1,7 @@
 import React from 'react';
 import { fonts } from '../styled';
 import { images } from '../../../../assets/images';
+import { formatToCurrency } from 'renderer/hooks/formatToCurrency';
 
 const ProductCard: React.FC<productCardProps> = ({
   image,
@@ -62,7 +63,7 @@ const ProductCard: React.FC<productCardProps> = ({
               fontFamily: fonts.family.medium,
             }}
           >
-            Discount Price: N{discountPrice}
+            Discount Price: {formatToCurrency(discountPrice)}
           </h3>
           <h3
             style={{
@@ -71,7 +72,7 @@ const ProductCard: React.FC<productCardProps> = ({
               fontFamily: fonts.family.medium,
             }}
           >
-            Original Price: ₦{price}
+            Original Price: {formatToCurrency(price)}
           </h3>
         </div>
       </div>

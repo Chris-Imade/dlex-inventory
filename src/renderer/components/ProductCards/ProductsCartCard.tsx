@@ -4,12 +4,17 @@ import { fonts } from '../styled';
 import { count } from 'console';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from 'renderer/Redux/store';
-import { setRemoveTransactionProduct, setTransactionProducts } from 'renderer/Redux/Splice/appSlice';
+import {
+  setRemoveTransactionProduct,
+  setTransactionProducts,
+} from 'renderer/Redux/Splice/appSlice';
 import { useImageFormat } from 'renderer/hooks/useImageFormat';
 
 const ProductsCartCard: React.FC<ProductCartCardProp> = ({ item, index }) => {
   const [itemCount, setItemCount] = useState<number>(1);
-  const transactionProduct = useSelector((state: AppState) => state.data.transactionProducts);
+  const transactionProduct = useSelector(
+    (state: AppState) => state.data.transactionProducts
+  );
   console.log(transactionProduct);
 
   const dispatch = useDispatch();
@@ -24,7 +29,7 @@ const ProductsCartCard: React.FC<ProductCartCardProp> = ({ item, index }) => {
         marginLeft: index % 2 == 0 || index !== 0 ? 30 : 0,
       }}
     >
-     {item.image ? (
+      {item.image ? (
         <img
           src={`${imageFormat}${item.image}`}
           width={130}
@@ -40,26 +45,30 @@ const ProductsCartCard: React.FC<ProductCartCardProp> = ({ item, index }) => {
         />
       )}
       <div className="ml-5 flex flex-col">
-          <h4
-            style={{
-              fontSize: 24,
-              fontFamily: fonts.family.medium,
-            }}
-          >
-            {item?.name}
-          </h4>
-          <div className='flex items-start flex-col md:flex-row'>
-            <div>
+        <h4
+          style={{
+            fontSize: 24,
+            fontFamily: fonts.family.medium,
+          }}
+        >
+          {item?.name}
+        </h4>
+        <div className="flex items-start flex-col md:flex-row">
+          <div>
             <h4 style={{ fontFamily: fonts.family.regular }}>
               Price:{' '}
-              <span className="text-green-500 text-xl">₦{item?.discountPrice}</span>
+              <span className="text-green-500 text-xl">
+                ₦{item?.discountPrice}
+              </span>
             </h4>
             <h5>
-              Original Price: <div style={{ textDecoration: 'line-through' }}>₦{item?.price}</div>
+              Original Price:{' '}
+              <div style={{ textDecoration: 'line-through' }}>
+                ₦{item?.price}
+              </div>
             </h5>
-
           </div>
-          <div className='flex mt-4 md:mt-0 md:flex-col items-center ml-[-8rem] md:ml-12'>
+          <div className="flex mt-4 md:mt-0 md:flex-col items-center ml-[-8rem] md:ml-12">
             <div className="flex mt-3 mr-4 md:mr-0">
               <button
                 disabled={itemCount <= 0}
@@ -78,23 +87,35 @@ const ProductsCartCard: React.FC<ProductCartCardProp> = ({ item, index }) => {
                 +
               </button>
             </div>
-            <div className='mt-3'>
-              <button onClick={() => {
-                console.log(item);
-                const proToAdd = {
-                  ...item,
-                  itemCount
-                }
-                dispatch(setTransactionProducts([proToAdd]));
-                // alert("Product Added to the database")
-              }} className='bg-blue-500 rounded-md text-white px-3 py-1'>Add</button>
-              <button onClick={() => {
-                alert("This product would be deleted from the current transaction: PROCEED?");
-                dispatch(setRemoveTransactionProduct(item?.name));
-              }} className='bg-red-500 ml-3 rounded-md text-white px-3 py-1'>Remove</button>
+            <div className="mt-3">
+              <button
+                onClick={() => {
+                  console.log(item);
+                  const proToAdd = {
+                    ...item,
+                    itemCount,
+                  };
+                  dispatch(setTransactionProducts([proToAdd]));
+                  // alert("Product Added to the database")
+                }}
+                className="bg-blue-500 rounded-md text-white px-3 py-1"
+              >
+                Add
+              </button>
+              <button
+                onClick={() => {
+                  alert(
+                    'This product would be deleted from the current transaction: PROCEED?'
+                  );
+                  dispatch(setRemoveTransactionProduct(item?.name));
+                }}
+                className="bg-red-500 ml-3 rounded-md text-white px-3 py-1"
+              >
+                Remove
+              </button>
             </div>
           </div>
-          </div>
+        </div>
       </div>
     </div>
   );

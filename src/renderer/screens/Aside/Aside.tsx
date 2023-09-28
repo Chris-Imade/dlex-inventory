@@ -7,19 +7,19 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from 'renderer/Redux/store';
 import { setActiveRoute } from 'renderer/Redux/Splice/appSlice';
 
-
 const Aside = () => {
   const [hovered, setHovered] = useState<boolean>(false);
   const [showDelayedItems, setShowDelayedItems] = useState(false);
   const activeRoute = useSelector((state: AppState) => state.data.activeRoute);
   // Redux state selectors
   const isSyncing = useSelector((state: AppState) => state.data.isSyncing);
-  const totalPendingItems = useSelector((state: AppState) => state.data.totalPendingItems);
+  const totalPendingItems = useSelector(
+    (state: AppState) => state.data.totalPendingItems
+  );
   const itemsSynced = useSelector((state: AppState) => state.data.itemsSynced);
 
-  const serviceProvider = localStorage.getItem("serviceProvider");
+  const serviceProvider = localStorage.getItem('serviceProvider');
   const parsedSP = serviceProvider && JSON.parse(serviceProvider);
-
 
   const dispatch = useDispatch();
 
@@ -58,7 +58,9 @@ const Aside = () => {
               </div>
             </Link>
             <div className={'h-[0.1px] bg-[#E6E7E9] w-full my-[24px]'} />
-            <Link onClick={() => dispatch(setActiveRoute('settings'))} to={'/settings'}
+            <Link
+              onClick={() => dispatch(setActiveRoute('settings'))}
+              to={'/settings'}
               className={
                 'bg-[#4A4DE6] h-[70px] rounded-[8px] shadow-sm flex justify-around items-center mb-[24px]'
               }
@@ -69,7 +71,7 @@ const Aside = () => {
                 }
                 style={{ fontFamily: fonts.family.medium, fontSize: 12 }}
               >
-                {parsedSP.username.split("")[0]}
+                {parsedSP.username.split('')[0].toUpperCase()}
               </div>
               {showDelayedItems && (
                 <div>
@@ -231,16 +233,17 @@ const Aside = () => {
               </div>
             </Link>
             <button
-            onClick={() => {
-              localStorage.removeItem('token');
-              location.reload();
-            }}
+              onClick={() => {
+                localStorage.removeItem('token');
+                location.reload();
+              }}
               style={{
                 color: colors.white,
                 fontSize: 14,
                 fontFamily: fonts.family.medium,
               }}
-            className="flex items-center text-white px-3 bg-[#2f2fef2c] h-[40px] p-1 rounded-[8px] my-3 w-full">
+              className="flex items-center text-white px-3 bg-[#2f2fef2c] h-[40px] p-1 rounded-[8px] my-3 w-full"
+            >
               Logout
             </button>
             <div className={'h-[0.1px] bg-[#E6E7E9] w-full my-[24px]'} />
@@ -251,27 +254,35 @@ const Aside = () => {
               }
             >
               {isSyncing ? (
-                  <div className='relative'>
-                    <div className='relative'>
-                      <img src={images.cloudLoad} alt="cloud" />
-                      <div className='absolute bg-[#4A4DE6] rounded-full w-6 h-6 top-6 left-3 border-solid border-[1px] border-gray-200 flex justify-center items-center'>
-                        <p className='text-xs text-white font-semibold'>{itemsSynced}</p>
-                        <p className='text-xs text-white font-semibold'>/</p>
-                        <p className='text-xs text-white font-semibold'>{totalPendingItems}</p>
-                      </div>
+                <div className="relative">
+                  <div className="relative">
+                    <img src={images.cloudLoad} alt="cloud" />
+                    <div className="absolute bg-[#4A4DE6] rounded-full w-6 h-6 top-6 left-3 border-solid border-[1px] border-gray-200 flex justify-center items-center">
+                      <p className="text-xs text-white font-semibold">
+                        {itemsSynced}
+                      </p>
+                      <p className="text-xs text-white font-semibold">/</p>
+                      <p className="text-xs text-white font-semibold">
+                        {totalPendingItems}
+                      </p>
                     </div>
-                    <img className='absolute top-3 animate-spin' src={images.syncLoad} alt="sync load" />
                   </div>
-                ) : (
-                  <div
-                    className={
-                      'w-[32px] h-[32px] rounded-full bg-[#ECD348] flex justify-center items-center'
-                    }
-                    style={{ fontFamily: fonts.family.medium, fontSize: 12 }}
-                  >
-                  {parsedSP.username.split("")[0]}
-                  </div>
-                )}
+                  <img
+                    className="absolute top-3 animate-spin"
+                    src={images.syncLoad}
+                    alt="sync load"
+                  />
+                </div>
+              ) : (
+                <div
+                  className={
+                    'w-[32px] h-[32px] rounded-full bg-[#ECD348] flex justify-center items-center'
+                  }
+                  style={{ fontFamily: fonts.family.medium, fontSize: 12 }}
+                >
+                  {parsedSP.username.split('')[0].toUpperCase()}
+                </div>
+              )}
               {showDelayedItems && (
                 <div>
                   <h3
@@ -281,7 +292,7 @@ const Aside = () => {
                       color: colors.white,
                     }}
                   >
-                    {isSyncing ? "Syncing" : parsedSP.username}
+                    {isSyncing ? 'Syncing' : parsedSP.username}
                   </h3>
                 </div>
               )}
@@ -313,7 +324,7 @@ const Aside = () => {
                 }
                 style={{ fontFamily: fonts.family.medium, fontSize: 12 }}
               >
-                {parsedSP.username.split("")[0]}
+                {parsedSP.username.split('')[0].toUpperCase()}
               </div>
             </div>
 
@@ -394,16 +405,24 @@ const Aside = () => {
               }
             >
               {isSyncing ? (
-                <div className='relative'>
-                  <div className='relative'>
+                <div className="relative">
+                  <div className="relative">
                     <img src={images.cloudLoad} alt="cloud" />
-                    <div className='absolute bg-[#4A4DE6] rounded-full w-6 h-6 top-5 left-2 border-solid border-[1px] border-gray-200 flex justify-center items-center'>
-                      <p className='text-xs text-white font-semibold'>{itemsSynced}</p>
-                      <p className='text-xs text-white font-semibold'>/</p>
-                      <p className='text-xs text-white font-semibold'>{totalPendingItems}</p>
+                    <div className="absolute bg-[#4A4DE6] rounded-full w-6 h-6 top-5 left-2 border-solid border-[1px] border-gray-200 flex justify-center items-center">
+                      <p className="text-xs text-white font-semibold">
+                        {itemsSynced}
+                      </p>
+                      <p className="text-xs text-white font-semibold">/</p>
+                      <p className="text-xs text-white font-semibold">
+                        {totalPendingItems}
+                      </p>
                     </div>
                   </div>
-                  <img className='absolute top-3 animate-spin' src={images.syncLoad} alt="sync load" />
+                  <img
+                    className="absolute top-3 animate-spin"
+                    src={images.syncLoad}
+                    alt="sync load"
+                  />
                 </div>
               ) : (
                 <div
@@ -412,7 +431,7 @@ const Aside = () => {
                   }
                   style={{ fontFamily: fonts.family.medium, fontSize: 12 }}
                 >
-                  {parsedSP.username.split("")[0]}
+                  {parsedSP.username.split('')[0].toUpperCase()}
                 </div>
               )}
             </div>

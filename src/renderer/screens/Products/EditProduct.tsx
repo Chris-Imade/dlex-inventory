@@ -21,6 +21,8 @@ const EditProduct: React.FC = () => {
   const [data, setData] = useState<null | any>(null);
   const [showStatus, setShowStatus] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
+  const userId = localStorage.getItem('userId');
+  const parsedUserId = userId && JSON.parse(userId);
 
   const editImageFormat = useImageFormat(product.imageFormat);
 
@@ -70,7 +72,7 @@ const EditProduct: React.FC = () => {
 
         if(productData.desc !== null && productData.name !== null && productData.discountPrice !== null) {
           try {
-            const response = await fetch(`${baseURL}${`/api/v1/products/${product._id}`}`, {
+            const response = await fetch(`${baseURL}${`/api/v1/products/${product._id}?userId=${parsedUserId}`}`, {
                 method: "PUT",
                 headers: {
                   Authorization: `Token ${accessToken}`,

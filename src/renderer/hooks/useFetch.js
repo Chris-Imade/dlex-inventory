@@ -7,17 +7,16 @@ const useDataFetching = (apiUrl) => {
   const [error, setError] = useState(null);
   const [refreshFlag, setRefreshFlag] = useState(false);
 
-
   const fetchData = async () => {
     try {
       const response = await fetch(`${baseURL}${apiUrl}`, {
-          method: "GET",
-          headers: {
-            Authorization: `Token ${accessToken}`,
-            "Content-Type": "application/json",
-            "ngrok-skip-browser-warning": "69420"
-          }
-        });
+        method: 'GET',
+        headers: {
+          Authorization: `Token ${accessToken}`,
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': '69420',
+        },
+      });
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }

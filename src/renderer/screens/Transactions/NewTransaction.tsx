@@ -9,10 +9,11 @@ import { Audio, ColorRing } from 'react-loader-spinner';
 // @ts-ignore
 import { v4 as uuidv4 } from 'uuid';
 
-
 const NewTransaction = () => {
   const pageIndex = useSelector((state: AppState) => state.data.pageIndex);
-  const transactionProducts = useSelector((state: AppState) => state.data.transactionProducts);
+  const transactionProducts = useSelector(
+    (state: AppState) => state.data.transactionProducts
+  );
 
   const [data, setData] = useState<any | null>(null);
   const [error, setError] = useState<any>(null);
@@ -23,32 +24,43 @@ const NewTransaction = () => {
   const [fullname, setFullname] = useState<string | null>(null);
   const [phone, setPhone] = useState<string | null>(null);
   const [phoneTwo, setPhoneTwo] = useState<string | null>(null);
-  const [status, setStatus] = useState<string | null>("Pending");
-  const [priority, setPriority] = useState<string | null>("High");
+  const [status, setStatus] = useState<string | null>('Pending');
+  const [priority, setPriority] = useState<string | null>('High');
   const [deadline, setDeadline] = useState<string>();
   const [desc, setDesc] = useState<string | null>(null);
+  const userId = localStorage.getItem('userId');
+  const parsedUserId = userId && JSON.parse(userId);
 
   const dispatch = useDispatch();
 
-
   // Function to save pending transaction to local storage
   const savePendingTransaction = (transactionData: any) => {
-      const uniqueId = uuidv4();
+    const uniqueId = uuidv4();
 
     // create an object to append uniqueIdentifier to
-    const transactionWithUUID = { ...transactionData, uniqueIdentifier: uniqueId };
+    const transactionWithUUID = {
+      ...transactionData,
+      uniqueIdentifier: uniqueId,
+    };
 
     // Create a seprate storage bucket for the pending data
-    const pendingTransactions = JSON.parse(localStorage.getItem('pendingTransactions') || '[]');
+    const pendingTransactions = JSON.parse(
+      localStorage.getItem('pendingTransactions') || '[]'
+    );
     pendingTransactions.push(transactionWithUUID);
-    localStorage.setItem('pendingTransactions', JSON.stringify(pendingTransactions));
+    localStorage.setItem(
+      'pendingTransactions',
+      JSON.stringify(pendingTransactions)
+    );
     // Add the transaction to the transactions on LS so that the app works just normal
-    const transactions = JSON.parse(localStorage.getItem('transactions') || '[]');
+    const transactions = JSON.parse(
+      localStorage.getItem('transactions') || '[]'
+    );
     transactions.push(transactionWithUUID);
     localStorage.setItem('transactions', JSON.stringify(transactions));
   };
 
-  const handleCreateTransaction = async(event: any) => {
+  const handleCreateTransaction = async (event: any) => {
     event.preventDefault();
     const hereToDB = {
       products: transactionProducts,
@@ -59,24 +71,28 @@ const NewTransaction = () => {
       status,
       priority,
       deadline,
-      desc
-    }
+      desc,
+    };
 
-
-    if(hereToDB.email !== null && hereToDB.phone !== null && hereToDB.products !== null && hereToDB.clientName !== null) {
+    if (
+      hereToDB.email !== null &&
+      hereToDB.phone !== null &&
+      hereToDB.products !== null &&
+      hereToDB.clientName !== null
+    ) {
       setLoading(true);
 
       try {
-        const response = await fetch(`${baseURL}/api/v1/transaction/`, {
-          method: "POST",
+        const response = await fetch(`${baseURL}/api/v1/transaction?userId=${parsedUserId}`, {
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
             Authorization: `Token ${accessToken}`,
           },
-          body: JSON.stringify(hereToDB)
+          body: JSON.stringify(hereToDB),
         });
 
-        if(!response.ok) {
+        if (!response.ok) {
           throw new Error('Network response was not ok');
         }
         const result = await response.json();
@@ -91,18 +107,21 @@ const NewTransaction = () => {
         setData(null);
         setShowStatus(true);
         // Network fail safe
-        if(error && !navigator.onLine) {
+        if (error && !navigator.onLine) {
           savePendingTransaction(hereToDB);
-          setData({ message: "Successful", status: 201, detail: "Transaction created successfully" })
+          setData({
+            message: 'Successful',
+            status: 201,
+            detail: 'Transaction created successfully',
+          });
           setError(null);
           location.reload();
         }
       }
     } else {
-      alert("All fields are required!!");
+      alert('All fields are required!!');
     }
-  }
-
+  };
 
   useEffect(() => {
     const delayedComponent = setTimeout(() => {
@@ -112,13 +131,14 @@ const NewTransaction = () => {
     return () => clearTimeout(delayedComponent);
   }, [showStatus]);
 
-
   return (
     <div>
       {pageIndex === 0 ? (
         <ProductCart />
       ) : pageIndex === 1 ? (
-        <div className={`${styles.dashboard} py-[48px] px-[49px] w-[93.8vw] h-[100vh]`}>
+        <div
+          className={`${styles.dashboard} py-[48px] px-[49px] w-[93.8vw] h-[100vh]`}
+        >
           <button
             onClick={() => dispatch(setPageIndex(0))}
             className="mb-[49px]"
@@ -223,48 +243,11 @@ const NewTransaction = () => {
                   Job Details
                 </label>
                 <textarea
-                onChange={(e) => setDesc(e.target.value)}
+                  onChange={(e) => setDesc(e.target.value)}
                   className="p-4 mt-4 w-full h-36 border-[1px] border-solid border-[#eeeeee]"
                   placeholder="Describe the job here..."
                 ></textarea>
               </div>
-              {/* <div className="flex flex-col mt-5 md:mr-[8rem]">
-                <div className="flex flex-col">
-                  <label
-                    style={{
-                      fontFamily: fonts.family.medium,
-                      fontSize: 20,
-                    }}
-                    htmlFor="phone_number"
-                  >
-                    Phone Number
-                  </label>
-                  <input
-                    className={styles.input}
-                    type="number"
-                    placeholder=""
-                    name="phone"
-                    required
-                  />
-                </div>
-                <div className="flex flex-col mt-4">
-                  <label
-                    style={{
-                      fontFamily: fonts.family.medium,
-                      fontSize: 20,
-                    }}
-                    htmlFor="date"
-                  >
-                    Deadline
-                  </label>
-                  <input
-                    className={styles.input}
-                    type="date"
-                    placeholder=""
-                    name="date"
-                  />
-                </div>
-              </div> */}
             </div>
             {/* Fourth Row */}
             <div className="flex flex-grow-0 justify-between items-center flex-col md:flex-row mt-5 ml-[-19rem] md:ml-0">
@@ -278,7 +261,10 @@ const NewTransaction = () => {
                 >
                   Priority
                 </label>
-                <select onChange={(e) => setPriority(e.target.value)} className={styles.input}>
+                <select
+                  onChange={(e) => setPriority(e.target.value)}
+                  className={styles.input}
+                >
                   <option value="High">High</option>
                   <option value="Low">Low</option>
                   <option value="Uncertain">Uncertain</option>
@@ -294,13 +280,16 @@ const NewTransaction = () => {
                 >
                   Status
                 </label>
-                <select onChange={(e) => setStatus(e.target.value)} className={styles.input}>
+                <select
+                  onChange={(e) => setStatus(e.target.value)}
+                  className={styles.input}
+                >
                   <option value="Pending">Pending</option>
                   <option value="Waiting">Waiting</option>
                   <option value="Closed">Closed</option>
                 </select>
               </div>
-              <div className='flex flex-col w-[10rem]'>
+              <div className="flex flex-col w-[10rem]">
                 <label
                   style={{
                     fontFamily: fonts.family.medium,
@@ -310,7 +299,10 @@ const NewTransaction = () => {
                 >
                   Deadline
                 </label>
-                <input type="date" onChange={(e) => setDeadline(e.target.value)} />
+                <input
+                  type="date"
+                  onChange={(e) => setDeadline(e.target.value)}
+                />
               </div>
             </div>
 
@@ -340,7 +332,7 @@ const NewTransaction = () => {
                 fontSize: 20,
               }}
             >
-              {loading ?
+              {loading ? (
                 <ColorRing
                   visible={true}
                   height="50"
@@ -348,18 +340,45 @@ const NewTransaction = () => {
                   ariaLabel="blocks-loading"
                   wrapperStyle={{}}
                   wrapperClass="blocks-wrapper"
-                  colors={['#ECD348', '#ECD348', '#ECD348', '#ECD348', '#ECD348']}
-                />  : "Add Transaction"}
+                  colors={[
+                    '#ECD348',
+                    '#ECD348',
+                    '#ECD348',
+                    '#ECD348',
+                    '#ECD348',
+                  ]}
+                />
+              ) : (
+                'Add Transaction'
+              )}
             </button>
           </form>
         </div>
       ) : null}
 
       {showStatus && (
-        <div className='flex justify-center items-center w-full'>
-          <div className={`absolute bottom-5 rounded-md p-2 font-semibold ${data && "bg-green-300"} ${error && "bg-orange-300"}`}>
-              {error && <p className='text-black' style={{ fontFamily: fonts.family.medium}}>{error.message}</p>}
-              {data?.status === 201 && <p className='text-black' style={{ fontFamily: fonts.family.medium}}>{data.detail}</p>}
+        <div className="flex justify-center items-center w-full">
+          <div
+            className={`absolute bottom-5 rounded-md p-2 font-semibold ${
+              data && 'bg-green-300'
+            } ${error && 'bg-orange-300'}`}
+          >
+            {error && (
+              <p
+                className="text-black"
+                style={{ fontFamily: fonts.family.medium }}
+              >
+                {error.message}
+              </p>
+            )}
+            {data?.status === 201 && (
+              <p
+                className="text-black"
+                style={{ fontFamily: fonts.family.medium }}
+              >
+                {data.detail}
+              </p>
+            )}
           </div>
         </div>
       )}

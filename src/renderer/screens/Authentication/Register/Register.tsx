@@ -1,11 +1,16 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { baseURL, colors, fonts } from '../../../components/styled';
 import { images } from '../../../../../assets/images';
 import { CustomInputs } from '../../../components';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from 'renderer/Redux/store';
-import { setEmail, setPassword, setShowPass, setUsername } from 'renderer/Redux/Splice/appSlice';
+import {
+  setEmail,
+  setPassword,
+  setShowPass,
+  setUsername,
+} from 'renderer/Redux/Splice/appSlice';
 
 interface RegisterHookResult {
   data: any | null;
@@ -13,59 +18,73 @@ interface RegisterHookResult {
 }
 
 const Register: React.FC = () => {
+  const [showStatus, setShowStatus] = useState(false);
   const username = useSelector((state: AppState) => state.data.username);
   const email = useSelector((state: AppState) => state.data.email);
   const password = useSelector((state: AppState) => state.data.password);
   const [error, setError] = useState<any>(null);
   const [data, setData] = useState<any | null>(null);
-  console.log("data: ", data, "error: ", error);
+  console.log('data: ', data, 'error: ', error);
 
   const navigation = useNavigate();
 
   const dispatch = useDispatch();
 
-  if(data) {
+  if (data) {
     const { status } = data;
     console.log(status);
-    if(status === 201) {
+    if (status === 201) {
       navigation('/login');
     }
   }
 
-
-
   const handleSubmit = () => {
-    console.log("email: ", email, "password: ", password, "username: ", username);
+    console.log(
+      'email: ',
+      email,
+      'password: ',
+      password,
+      'username: ',
+      username
+    );
 
-      const registerUser = async() => {
-        try {
-          const response = await fetch(`${baseURL}/api/v1/auth/register`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ username, email, password })
-          });
+    const registerUser = async () => {
+      try {
+        const response = await fetch(`${baseURL}/api/v1/auth/register`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ username, email, password }),
+        });
 
-          if(!response.ok) {
-            throw new Error('Network response was not ok');
-          }
-          const result = await response.json();
-          setData(result);
-          setError(null);
-        } catch (error) {
-          setError(error);
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
         }
+        const result = await response.json();
+        setData(result);
+        setError(null);
+        setShowStatus(true);
+      } catch (error) {
+        setError(error);
+        setShowStatus(true);
+        setData(null);
       }
+    };
 
-      registerUser();
+    registerUser();
+  };
 
-
-  }
+  useEffect(() => {
+    const delayedComponent = setTimeout(() => {
+      setShowStatus(false);
+    }, 3000);
+    return () => clearTimeout(delayedComponent);
+  }, [showStatus]);
 
   return (
     <div
-      className="w-[100vw] h-[100vh] justify-center items-center flex overflow-y-auto"
+      className="w-[100vw] h-[100vh] justify-center items-center flex overflow-y-auto pb-12 pt-32 lg:pt-0 lg:pb-0"
       style={{ backgroundColor: colors.primary }}
     >
       <div className="flex flex-col items-center">
@@ -133,7 +152,11 @@ const Register: React.FC = () => {
           <CustomInputs type="Password" />
 
           <div className="flex w-full p-1 items-center mt-[7px] mb-[24px]">
-            <input onClick={() => dispatch(setShowPass())} type="checkbox" className="mr-2 w-[15px] h-[15px]" />
+            <input
+              onClick={() => dispatch(setShowPass())}
+              type="checkbox"
+              className="mr-2 w-[15px] h-[15px]"
+            />
             <p
               style={{
                 fontSize: 14,
@@ -146,7 +169,7 @@ const Register: React.FC = () => {
           </div>
 
           <button
-          onClick={handleSubmit}
+            onClick={handleSubmit}
             style={{
               backgroundColor: colors.primary,
               fontSize: 16,
@@ -157,6 +180,34 @@ const Register: React.FC = () => {
             Register
           </button>
         </div>
+        {showStatus && (
+          <div className="flex justify-center items-center w-full">
+            <div
+              className={`absolute bottom-5 rounded-md p-2 font-semibold ${
+                data && 'bg-green-300'
+              } ${error && 'bg-orange-300'}`}
+            >
+              {error && (
+                <p
+                  className="text-black"
+                  style={{ fontFamily: fonts.family.medium }}
+                >
+                  {error.message === 'Failed to fetch'
+                    ? 'Please check your network and try again 😥'
+                    : error.message}
+                </p>
+              )}
+              {data?.status === 200 && (
+                <p
+                  className="text-black"
+                  style={{ fontFamily: fonts.family.medium }}
+                >
+                  {data.detail}
+                </p>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

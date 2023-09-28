@@ -117,4 +117,3 @@
 .animated-modal.hidden {
   @apply opacity-0 pointer-events-none; /* Hide the modal when not shown */
 }
-

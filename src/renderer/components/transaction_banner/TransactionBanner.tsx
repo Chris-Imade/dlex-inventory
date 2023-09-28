@@ -9,19 +9,25 @@ const Banner = () => {
   const [error, setError] = useState<any | null>(null);
   const [showStatus, setShowStatus] = useState<boolean>(false);
 
-  const requestTransactionReport = async(event: any) => {
-    if(navigator.onLine) {
+  const userId = localStorage.getItem('userId');
+  const parsedUserId = userId && JSON.parse(userId);
+
+  const requestTransactionReport = async (event: any) => {
+    if (navigator.onLine) {
       setLoading(true);
       try {
-        const response = await fetch(`${baseURL}/api/v1/reports/sendTransaction`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Token ${accessToken}`,
-          },
-        });
+        const response = await fetch(
+          `${baseURL}/api/v1/reports/sendTransaction?userId=${parsedUserId}`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Token ${accessToken}`,
+            },
+          }
+        );
 
-        if(!response.ok) {
+        if (!response.ok) {
           throw new Error('Network response was not ok');
         }
         const result = await response.json();
@@ -36,9 +42,10 @@ const Banner = () => {
         setShowStatus(true);
       }
     } else {
-      alert("You can only request reports when online!");
+      alert('You can only request reports when online!');
+      setLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
     const delayedComponent = setTimeout(() => {
@@ -97,7 +104,7 @@ const Banner = () => {
         <div className="absolute right-10 top-[0.50rem]">
           <button
             onClick={requestTransactionReport}
-            className='
+            className="
               h-10 px-3
               rounded-[8px]
               text-[#3855B3] flex
@@ -112,26 +119,47 @@ const Banner = () => {
               transition-all
               duration-500
               ease-in-out
-            '
+            "
           >
-            {loading ?
-            <ColorRing
-              visible={true}
-              height="50"
-              width="50"
-              ariaLabel="blocks-loading"
-              wrapperStyle={{}}
-              wrapperClass="blocks-wrapper"
-              colors={['#ECD348', '#ECD348', '#ECD348', '#ECD348', '#ECD348']}
-            />  : "Request Report"}
+            {loading ? (
+              <ColorRing
+                visible={true}
+                height="50"
+                width="50"
+                ariaLabel="blocks-loading"
+                wrapperStyle={{}}
+                wrapperClass="blocks-wrapper"
+                colors={['#ECD348', '#ECD348', '#ECD348', '#ECD348', '#ECD348']}
+              />
+            ) : (
+              'Request Report'
+            )}
           </button>
         </div>
       </div>
       {showStatus && (
-        <div className='flex justify-center items-center w-full'>
-          <div className={`absolute top-[0.50rem] right-44 rounded-md p-2 font-semibold ${data && "bg-green-300"} ${error && "bg-orange-300"}`}>
-              {error && <p className='text-black' style={{ fontFamily: fonts.family.medium}}>{error.message}</p>}
-              {data?.status === 200 && <p className='text-black' style={{ fontFamily: fonts.family.medium}}>{data.detail}</p>}
+        <div className="flex justify-center items-center w-full">
+          <div
+            className={`absolute top-[0.50rem] right-44 rounded-md p-2 font-semibold ${
+              data && 'bg-green-300'
+            } ${error && 'bg-orange-300'}`}
+          >
+            {error && (
+              <p
+                className="text-black"
+                style={{ fontFamily: fonts.family.medium }}
+              >
+                {error.message}
+              </p>
+            )}
+            {data?.status === 200 && (
+              <p
+                className="text-black"
+                style={{ fontFamily: fonts.family.medium }}
+              >
+                {data.detail}
+              </p>
+            )}
           </div>
         </div>
       )}

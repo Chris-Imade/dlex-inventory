@@ -1,5 +1,10 @@
 import React, { ChangeEvent, FormEvent, useEffect, useState } from 'react';
-import { accessToken, baseURL, colors, fonts } from 'renderer/components/styled';
+import {
+  accessToken,
+  baseURL,
+  colors,
+  fonts,
+} from 'renderer/components/styled';
 import styles from './styles.module.css';
 import { ColorRing } from 'react-loader-spinner';
 // @ts-ignore
@@ -7,7 +12,9 @@ import { v4 as uuidv4 } from 'uuid';
 import { Link, useNavigation } from 'react-router-dom';
 
 const NewProduct: React.FC = () => {
-  const [selectedImage, setSelectedImage] = useState<File | undefined>(undefined);
+  const [selectedImage, setSelectedImage] = useState<File | undefined>(
+    undefined
+  );
   const [productName, setProductName] = useState<string>('');
   const [discountPrice, setDiscountPrice] = useState<string>('');
   const [originalPrice, setOriginalPrice] = useState<string>('');
@@ -19,29 +26,33 @@ const NewProduct: React.FC = () => {
   const [showStatus, setShowStatus] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
 
+  const userId = localStorage.getItem('userId');
+  const parsedUserId = userId && JSON.parse(userId);
+
   // const navigation = useNavigation();
 
   // Function to save pending product to local storage
-const savePendingProduct = (productData: any) => {
-  const uniqueId = uuidv4();
-  // create an object to append uniqueIdentifier to
-  const productWithUUID = { ...productData, uniqueIdentifier: uniqueId };
+  const savePendingProduct = (productData: any) => {
+    const uniqueId = uuidv4();
+    // create an object to append uniqueIdentifier to
+    const productWithUUID = { ...productData, uniqueIdentifier: uniqueId };
 
-  // Create a seprate storage bucket for the pending data
-  const pendingProducts = JSON.parse(localStorage.getItem('pendingProducts') || '[]');
-  pendingProducts.push(productWithUUID);
-  localStorage.setItem('pendingProducts', JSON.stringify(pendingProducts));
-  // Add the product to the products on LS so that the app works just normal
-  const products = JSON.parse(localStorage.getItem('products') || '[]');
-  products.push(productWithUUID);
-  localStorage.setItem('products', JSON.stringify(products));
-};
+    // Create a seprate storage bucket for the pending data
+    const pendingProducts = JSON.parse(
+      localStorage.getItem('pendingProducts') || '[]'
+    );
+    pendingProducts.push(productWithUUID);
+    localStorage.setItem('pendingProducts', JSON.stringify(pendingProducts));
+    // Add the product to the products on LS so that the app works just normal
+    const products = JSON.parse(localStorage.getItem('products') || '[]');
+    products.push(productWithUUID);
+    localStorage.setItem('products', JSON.stringify(products));
+  };
 
   const getBase64ImageFormat = (dataURI: string | undefined) => {
     const formatMatcher = dataURI?.match(/^data:(image\/\w+);base64,/);
     return formatMatcher ? formatMatcher[1] : 'jpeg'; // Use 'jpeg' as the default image format
   };
-
 
   const handleImageChange: any = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -58,18 +69,18 @@ const savePendingProduct = (productData: any) => {
     }
   };
 
-  const handleSubmit = async(event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     setLoading(true);
     event.preventDefault();
     if (selectedImage) {
       // Convert the image file to a Base64 string before sending it to the backend
       const reader = new FileReader();
-      reader.onloadend = async() => {
+      reader.onloadend = async () => {
         const imageDataString = reader.result?.toString().split(','); // Extract the Base64 string without data:image/...;base64,
         const imageType = imageDataString?.[0];
-        console.log("Image Type: ", imageType);
+        console.log('Image Type: ', imageType);
         const imageFormat = getBase64ImageFormat(imageType?.[0]);
-        console.log("Image Format: ", imageFormat);
+        console.log('Image Format: ', imageFormat);
         // Now you can send this `imageDataString` to the backend along with other form data.
         const productData = {
           image: imageDataString?.[1],
@@ -78,44 +89,51 @@ const savePendingProduct = (productData: any) => {
           price: originalPrice,
           desc: productDesc,
           imageFormat,
-          uniqueIdentifier: productName
+          uniqueIdentifier: productName,
         };
-        console.log(productData)
+        console.log(productData);
 
-          try {
-            const response = await fetch(`${baseURL}${'/api/v1/products/'}`, {
-                method: "POST",
-                headers: {
-                  Authorization: `Token ${accessToken}`,
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify(productData)
-              });
-            if (!response.ok) {
-              throw new Error('Network response was not ok');
+        try {
+          const response = await fetch(
+            `${baseURL}/api/v1/products?userId=${parsedUserId}`,
+            {
+              method: 'POST',
+              headers: {
+                Authorization: `Token ${accessToken}`,
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(productData),
             }
-            const result = await response.json();
-            setData(result);
-            setError(null);
-            setShowStatus(true);
-            setLoading(false);
-            console.log("result: ", result);
-            location.reload();
-          } catch (error: any) {
-            setError(error.message);
-            setData(null);
-            setShowStatus(true);
-            setLoading(false);
-            console.log("error: ", error);
-            // Network fail safe
-            if(error && !navigator.onLine) {
-              savePendingProduct(productData);
-              setData({ message: "Successful", status: 201, detail: "Product created successfully" });
-              setError(null);
-              // navigation.location('/products');
-              location.reload();
-            }
+          );
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
           }
+          const result = await response.json();
+          setData(result);
+          setError(null);
+          setShowStatus(true);
+          setLoading(false);
+          console.log('result: ', result);
+          location.reload();
+        } catch (error: any) {
+          setError(error.message);
+          setData(null);
+          setShowStatus(true);
+          setLoading(false);
+          console.log('error: ', error);
+          // Network fail safe
+          if (error && !navigator.onLine) {
+            savePendingProduct(productData);
+            setData({
+              message: 'Successful',
+              status: 201,
+              detail: 'Product created successfully',
+            });
+            setError(null);
+            // navigation.location('/products');
+            location.reload();
+          }
+        }
       };
       reader.readAsDataURL(selectedImage);
     }
@@ -133,7 +151,8 @@ const savePendingProduct = (productData: any) => {
     <div
       className={`py-[48px] px-[49px] w-[93.8vw] h-[100vh] ${styles.dashboard}`}
     >
-      <Link to={"/products"}
+      <Link
+        to={'/products'}
         className=""
         style={{
           fontFamily: fonts.family.medium,
@@ -158,7 +177,7 @@ const savePendingProduct = (productData: any) => {
                 src={imagePreview}
                 alt="Selected Image Preview"
                 style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-                className=''
+                className=""
               />
             ) : (
               'Select File'
@@ -249,15 +268,35 @@ const savePendingProduct = (productData: any) => {
               wrapperClass="blocks-wrapper"
               colors={['#ECD348', '#ECD348', '#ECD348', '#ECD348', '#ECD348']}
             />
-          ) : "Create Product"}
+          ) : (
+            'Create Product'
+          )}
         </button>
       </form>
       {showStatus && (
-        <div className='flex justify-center items-center w-full'>
-          <div className={`absolute bottom-5 rounded-md p-2 font-semibold ${data && "bg-green-300"} ${error && "bg-orange-300"}`}>
-              {error && <p className='text-black' style={{ fontFamily: fonts.family.medium}}>{error.message}</p>}
-              {data?.status === 201 && <p className='text-black' style={{ fontFamily: fonts.family.medium}}>{data.detail}</p>}
-              {console.log("data inside jsx", data)}
+        <div className="flex justify-center items-center w-full">
+          <div
+            className={`absolute bottom-5 rounded-md p-2 font-semibold ${
+              data && 'bg-green-300'
+            } ${error && 'bg-orange-300'}`}
+          >
+            {error && (
+              <p
+                className="text-black"
+                style={{ fontFamily: fonts.family.medium }}
+              >
+                {error.message}
+              </p>
+            )}
+            {data?.status === 201 && (
+              <p
+                className="text-black"
+                style={{ fontFamily: fonts.family.medium }}
+              >
+                {data.detail}
+              </p>
+            )}
+            {console.log('data inside jsx', data)}
           </div>
         </div>
       )}

@@ -22,7 +22,8 @@ import {
   startSync,
   stopSync,
   setTotalPendingItems,
-  incrementItemsSynced
+  incrementItemsSynced,
+  setUserId,
 } from './Redux/Splice/appSlice';
 import TransactionDetailed from './screens/Transactions/TransactionDetailed';
 import { accessToken, baseURL } from './components/styled';
@@ -30,9 +31,20 @@ import EditProduct from './screens/Products/EditProduct';
 
 export default function App() {
   const token = localStorage.getItem('token');
-  const { data: productsData, error: productsError, refreshData: refreshProductsData } = useDataFetching("/api/v1/products/");
-  const { data: transactionsData, error: transactionsError, refreshData: refreshTransactionsData } = useDataFetching("/api/v1/transaction/");
+  const userId = localStorage.getItem('userId');
+  const parsedUserId = userId && JSON.parse(userId);
+  console.log(parsedUserId);
 
+  const {
+    data: productsData,
+    error: productsError,
+    refreshData: refreshProductsData,
+  } = useDataFetching(`/api/v1/products?userId=${parsedUserId}`);
+  const {
+    data: transactionsData,
+    error: transactionsError,
+    refreshData: refreshTransactionsData,
+  } = useDataFetching(`/api/v1/transaction?userId=${parsedUserId}`);
 
   const dispatch = useDispatch();
 
@@ -40,50 +52,134 @@ export default function App() {
   const storedTransactions = localStorage.getItem('transactions');
 
   useEffect(() => {
-    if(productsData) {
+    if (productsData) {
       dispatch(setProducts(productsData));
-      localStorage.setItem("products", JSON.stringify(productsData));
-      console.log(productsData)
+      localStorage.setItem('products', JSON.stringify(productsData));
+      console.log(productsData);
     } else {
       console.log(productsError);
     }
 
-    if(transactionsData) {
+    if (transactionsData) {
       dispatch(setTransactions(transactionsData));
-      localStorage.setItem("transactions", JSON.stringify(transactionsData));
-      console.log(transactionsData)
+      localStorage.setItem('transactions', JSON.stringify(transactionsData));
+      console.log(transactionsData);
     } else {
       console.log(transactionsError);
     }
 
-
-
-
     if (!productsData && storedProducts) {
       const parsedProducts = JSON.parse(storedProducts);
       dispatch(setProducts(parsedProducts));
-      console.log("parsedProducts:", parsedProducts);
+      console.log('parsedProducts:', parsedProducts);
     }
     if (!transactionsData && storedTransactions) {
       const parsedTransaction = JSON.parse(storedTransactions);
       dispatch(setTransactions(parsedTransaction));
-      console.log("parsedTransaction:", parsedTransaction);
+      console.log('parsedTransaction:', parsedTransaction);
     }
   }, [productsData, transactionsData, storedProducts, storedTransactions]);
 
+  // GEt user Id
+  const getUserId = async () => {
+    try {
+      const response = await fetch(`${baseURL}${`/api/v1/users/user-id`}`, {
+        method: 'GET',
+        headers: {
+          Authorization: `Token ${accessToken}`,
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': '69420',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Network response was not ok`);
+      }
+      const userIdData = await response.json();
+      const userId = userIdData.userId;
+      // setUserId(userId);
+      return userId;
+    } catch (error) {
+      console.log(error);
+      throw new Error(`${error}`);
+    }
+  };
+
+  const getUserDetails = async (userId: string) => {
+    try {
+      const response = await fetch(`${baseURL}/api/v1/users/user/${userId}`, {
+        method: 'GET',
+        headers: {
+          Authorization: `Token ${accessToken}`,
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': '69420',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Network response was not ok`);
+      }
+      const user = await response.json();
+
+      // Remove sensitive information
+      const { hash, salt, createdAt, updatedAt, __v, _id, ...serviceProvider } =
+        user;
+
+      // Store the rest as serviceProvider in localStorage
+      localStorage.setItem('serviceProvider', JSON.stringify(serviceProvider));
+
+      // Update Redux state with serviceProvider data
+      dispatch(setServiceProvider(serviceProvider));
+    } catch (error) {
+      // If an error occurs and there is no network connection, use the serviceProvider from localStorage
+      const serviceProviderLC = localStorage.getItem('serviceProvider');
+      if (serviceProviderLC !== null) {
+        const parsedServiceProvider = JSON.parse(serviceProviderLC);
+        dispatch(setServiceProvider(parsedServiceProvider));
+      } else {
+        // Handle the case when serviceProviderLC is null (e.g., provide a default value)
+      }
+
+      // Rethrow the error
+      throw new Error(`${error}`);
+    }
+  };
+
+  const fetchUserDetails = async () => {
+    try {
+      const userId = await getUserId();
+      dispatch(setUserId(userId));
+      localStorage.setItem('userId', JSON.stringify(userId));
+      await getUserDetails(userId);
+    } catch (error) {
+      console.error('Error fetching user details:', error);
+    }
+  };
+
+  // Call the function to fetch and store user details
+  useEffect(() => {
+    fetchUserDetails();
+  }, []);
+
+
   // Function to synchronize pending data when device comes online
   const synchronizePendingData = async () => {
-    const pendingProducts = JSON.parse(localStorage.getItem('pendingProducts') || '[]');
-    const pendingTransactions = JSON.parse(localStorage.getItem('pendingTransactions') || '[]');
+    const pendingProducts = JSON.parse(
+      localStorage.getItem('pendingProducts') || '[]'
+    );
+    const pendingTransactions = JSON.parse(
+      localStorage.getItem('pendingTransactions') || '[]'
+    );
 
     // Function to send a pending product to the server and handle the response
     const sendPendingProduct = async (productData: any) => {
+     if(parsedUserId) {
       try {
-        const response = await fetch(`${baseURL}/api/v1/products/`, {
+        const response = await fetch(`${baseURL}/api/v1/products?userId=${parsedUserId}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Token ${accessToken}`
+            Authorization: `Token ${accessToken}`,
           },
           body: JSON.stringify(productData),
         });
@@ -93,43 +189,58 @@ export default function App() {
           const existingData = responseData.existingData;
 
           // Remove the synchronized product from pending products
-          localStorage.setItem('pendingProducts', JSON.stringify(pendingProducts.filter((product: Product) => {
-            return product.uniqueIdentifier !== existingData;
-          })));
+          localStorage.setItem(
+            'pendingProducts',
+            JSON.stringify(
+              pendingProducts.filter((product: Product) => {
+                return product.uniqueIdentifier !== existingData;
+              })
+            )
+          );
         }
       } catch (error) {
         console.error('Error synchronizing pending Products:', error);
       }
+     }
     };
 
     // Function to send a pending transaction to the server and handle the response
     const sendPendingTransaction = async (transactionData: any) => {
-      try {
-        const response = await fetch(`${baseURL}/api/v1/transaction/`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Token ${accessToken}`
-          },
-          body: JSON.stringify(transactionData),
-        });
+      if(parsedUserId) {
+        try {
+          const response = await fetch(`${baseURL}/api/v1/transaction?userId=${parsedUserId}`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Token ${accessToken}`,
+            },
+            body: JSON.stringify(transactionData),
+          });
 
-        if (response.ok) {
-          const responseData = await response.json();
-          const existingData = responseData.existingData;
+          if (response.ok) {
+            const responseData = await response.json();
+            const existingData = responseData.existingData;
 
-          // Remove the synchronized transaction from pending transactions
-          localStorage.setItem('pendingTransactions', JSON.stringify(pendingTransactions.filter((transaction: Transaction) => {
-            return transaction.uniqueIdentifier !== existingData;
-          })));
+            // Remove the synchronized transaction from pending transactions
+            localStorage.setItem(
+              'pendingTransactions',
+              JSON.stringify(
+                pendingTransactions.filter((transaction: Transaction) => {
+                  return transaction.uniqueIdentifier !== existingData;
+                })
+              )
+            );
+          }
+        } catch (error) {
+          console.error('Error synchronizing pending Transactions:', error);
         }
-      } catch (error) {
-        console.error('Error synchronizing pending Transactions:', error);
       }
     };
 
     // Set the total pending items count
-    dispatch(setTotalPendingItems(pendingProducts.length + pendingTransactions.length));
+    dispatch(
+      setTotalPendingItems(pendingProducts.length + pendingTransactions.length)
+    );
 
     // Start syncing
     dispatch(startSync());
@@ -150,7 +261,6 @@ export default function App() {
     dispatch(stopSync());
   };
 
-
   // Use a periodic interval to check network status and synchronize pending data
   useEffect(() => {
     // Check network status every 30 seconds
@@ -164,89 +274,6 @@ export default function App() {
     // Clear the interval on component unmount
     return () => clearInterval(interval);
   }, []);
-
-
-  // GEt user Id
-  const getUserId = async () => {
-    try {
-      const response = await fetch(`${baseURL}${`/api/v1/users/user-id`}`, {
-        method: "GET",
-        headers: {
-          Authorization: `Token ${accessToken}`,
-          "Content-Type": "application/json",
-          "ngrok-skip-browser-warning": "69420"
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error(`Network response was not ok`);
-      }
-      const userIdData = await response.json();
-      const userId = userIdData.userId;
-      // setUserId(userId);
-      return userId;
-    } catch (error) {
-      console.log(error);
-      throw new Error(`${error}`);
-    }
-  };
-
-
-  const getUserDetails = async (userId: string) => {
-    try {
-      const response = await fetch(`${baseURL}/api/v1/users/user/${userId}`, {
-        method: "GET",
-        headers: {
-          Authorization: `Token ${accessToken}`,
-          "Content-Type": "application/json",
-          "ngrok-skip-browser-warning": "69420"
-        }
-      });
-
-        if (!response.ok) {
-          throw new Error(`Network response was not ok`);
-        }
-        const user = await response.json();
-
-        // Remove sensitive information
-        const { hash, salt, createdAt, updatedAt, __v, _id, ...serviceProvider } = user;
-
-        // Store the rest as serviceProvider in localStorage
-        localStorage.setItem("serviceProvider", JSON.stringify(serviceProvider));
-
-        // Update Redux state with serviceProvider data
-        dispatch(setServiceProvider(serviceProvider));
-
-      } catch (error) {
-        // If an error occurs and there is no network connection, use the serviceProvider from localStorage
-        const serviceProviderLC = localStorage.getItem('serviceProvider');
-        if (serviceProviderLC !== null) {
-          const parsedServiceProvider = JSON.parse(serviceProviderLC);
-          dispatch(setServiceProvider(parsedServiceProvider));
-        } else {
-          // Handle the case when serviceProviderLC is null (e.g., provide a default value)
-        }
-
-        // Rethrow the error
-        throw new Error(`${error}`);
-      }
-    };
-
-    const fetchUserDetails = async () => {
-      try {
-        const userId = await getUserId();
-        await getUserDetails(userId);
-      } catch (error) {
-        console.error("Error fetching user details:", error);
-      }
-    };
-
-    // Call the function to fetch and store user details
-    useEffect(() => {
-      fetchUserDetails();
-    }, []);
-
-
 
 
   return (

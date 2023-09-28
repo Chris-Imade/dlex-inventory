@@ -24,6 +24,7 @@ export interface AppState {
   isSyncing: boolean;
   totalPendingItems: number;
   itemsSynced: number;
+  userId: string | null;
 }
 
 const initialState: AppState = {
@@ -47,8 +48,8 @@ const initialState: AppState = {
   isSyncing: false,
   totalPendingItems: 0,
   itemsSynced: 0,
+  userId: null,
 };
-
 
 export const appSlice = createSlice({
   name: 'data',
@@ -82,7 +83,7 @@ export const appSlice = createSlice({
       state.completedDeals = action.payload;
     },
     addProduct: (state, action: PayloadAction<Product>) => {
-      if(state.products !== null) {
+      if (state.products !== null) {
         state.products = [...state.products, action.payload];
       } else {
         state.products = [action.payload];
@@ -92,7 +93,7 @@ export const appSlice = createSlice({
       state.products = action.payload;
     },
     addTransaction: (state, action: PayloadAction<Transaction>) => {
-      if(state.transactions !== null) {
+      if (state.transactions !== null) {
         state.transactions = [...state.transactions, action.payload];
       } else {
         state.transactions = [action.payload];
@@ -104,20 +105,33 @@ export const appSlice = createSlice({
     setFeaturedProducts: (state, action: PayloadAction<FeaturedPayload>) => {
       state.featuredProducts = action.payload;
     },
-    setTransactionProducts: (state, action: PayloadAction<TransProductPayload>) => {
-      if(state.transactionProducts !== null) {
-        const duplicates = state.transactionProducts.filter((product) => product.name === action.payload[0].name);
+    setTransactionProducts: (
+      state,
+      action: PayloadAction<TransProductPayload>
+    ) => {
+      if (state.transactionProducts !== null) {
+        const duplicates = state.transactionProducts.filter(
+          (product) => product.name === action.payload[0].name
+        );
 
-        if(duplicates.length === 0) {
-          state.transactionProducts = [...state.transactionProducts, ...action.payload];
+        if (duplicates.length === 0) {
+          state.transactionProducts = [
+            ...state.transactionProducts,
+            ...action.payload,
+          ];
         }
       } else {
         state.transactionProducts = [...action.payload];
       }
     },
-    setRemoveTransactionProduct: (state, action: PayloadAction<string | undefined>) => {
-      if(state.transactionProducts !== null) {
-        const deletedList = state.transactionProducts?.filter((product) => product.name !== action.payload);
+    setRemoveTransactionProduct: (
+      state,
+      action: PayloadAction<string | undefined>
+    ) => {
+      if (state.transactionProducts !== null) {
+        const deletedList = state.transactionProducts?.filter(
+          (product) => product.name !== action.payload
+        );
 
         state.transactionProducts = deletedList;
       }
@@ -143,6 +157,9 @@ export const appSlice = createSlice({
     },
     incrementItemsSynced: (state) => {
       state.itemsSynced += 1;
+    },
+    setUserId: (state, action: PayloadAction<string>) => {
+      state.userId = action.payload;
     },
   },
 });
@@ -170,8 +187,8 @@ export const {
   startSync,
   stopSync,
   setTotalPendingItems,
-  incrementItemsSynced
+  incrementItemsSynced,
+  setUserId,
 } = appSlice.actions;
 
 export default appSlice.reducer;
-

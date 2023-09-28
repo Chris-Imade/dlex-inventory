@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { baseURL, colors, fonts } from '../../../components/styled';
 import { images } from '../../../../../assets/images';
 import { CustomInputs } from '../../../components';
@@ -8,6 +8,7 @@ import { AppState } from 'renderer/Redux/store';
 import { setShowPass, setToken } from 'renderer/Redux/Splice/appSlice';
 
 const Login: React.FC = () => {
+  const [showStatus, setShowStatus] = useState<boolean>(false);
   const username = useSelector((state: AppState) => state.data.username);
   const password = useSelector((state: AppState) => state.data.password);
   const dispatch = useDispatch();
@@ -16,47 +17,59 @@ const Login: React.FC = () => {
 
   const [error, setError] = useState<any>(null);
   const [data, setData] = useState<any | null>(null);
-  console.log("data: ", data, "error: ", error);
+  const [rawData, setRawData] = useState<any | null>(null);
+  console.log('data: ', data, 'error: ', error?.status);
 
+  console.log('data from app state: ', data);
 
-  if(data) {
+  if (data) {
     const { token } = data;
     dispatch(setToken(token));
-    localStorage.setItem("token", token);
+    localStorage.setItem('token', token);
+    const localToken = localStorage.getItem('token');
+    const parsedToken = localStorage.getItem('token');
+    console.log(token);
     window.location.reload();
   }
 
-
-
   const handleSubmit = () => {
-    console.log("password: ", password, "username: ", username);
+    console.log('password: ', password, 'username: ', username);
 
-      const registerUser = async() => {
-        try {
-          const response = await fetch(`${baseURL}/api/v1/auth/login`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ username, password })
-          });
-
-          if(!response.ok) {
-            throw new Error('Network response was not ok');
-          }
-          const result = await response.json();
-          setData(result);
-          setError(null);
-        } catch (error) {
-          setError(error);
+    const registerUser = async () => {
+      try {
+        const response = await fetch(`${baseURL}/api/v1/auth/login`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ username, password }),
+        });
+        setRawData(response);
+        console.log(response);
+        if (!response.ok) {
+          throw new Error('Response was not ok!');
         }
+        const result = await response.json();
+        setData(result);
+        setShowStatus(true);
+        setError(null);
+      } catch (error) {
+        setError(error);
+        setShowStatus(true);
+        setData(null);
       }
+    };
 
-      registerUser();
+    registerUser();
+  };
 
+  useEffect(() => {
+    const delayedComponent = setTimeout(() => {
+      setShowStatus(false);
+    }, 3000);
 
-  }
-
+    return () => clearTimeout(delayedComponent);
+  }, [showStatus]);
 
   return (
     <div
@@ -127,7 +140,11 @@ const Login: React.FC = () => {
           <CustomInputs type="Password" />
 
           <div className="flex w-full p-1 items-center mt-[7px] mb-[24px]">
-            <input type="checkbox" onClick={(e) => dispatch(setShowPass())} className="mr-2 w-[15px] h-[15px]" />
+            <input
+              type="checkbox"
+              onClick={(e) => dispatch(setShowPass())}
+              className="mr-2 w-[15px] h-[15px]"
+            />
             <p
               style={{
                 fontSize: 14,
@@ -140,7 +157,7 @@ const Login: React.FC = () => {
           </div>
 
           <button
-          onClick={handleSubmit}
+            onClick={handleSubmit}
             style={{
               backgroundColor: colors.primary,
               fontSize: 16,
@@ -151,6 +168,36 @@ const Login: React.FC = () => {
             Login
           </button>
         </div>
+        {showStatus && (
+          <div className="flex justify-center items-center w-full">
+            <div
+              className={`absolute bottom-5 rounded-md p-2 font-semibold ${
+                data && 'bg-green-300'
+              } ${error && 'bg-orange-300'}`}
+            >
+              {error && (
+                <p
+                  className="text-black"
+                  style={{ fontFamily: fonts.family.medium }}
+                >
+                  {error.message === 'Failed to fetch'
+                    ? 'Please check your network and try again 😥'
+                    : rawData.status === 401
+                    ? 'Invalid Credentials'
+                    : error.message}
+                </p>
+              )}
+              {data?.status === 200 && (
+                <p
+                  className="text-black"
+                  style={{ fontFamily: fonts.family.medium }}
+                >
+                  {'✅'}
+                </p>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
