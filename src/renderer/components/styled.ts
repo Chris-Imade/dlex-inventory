@@ -20,5 +20,5 @@ export const fonts = {
   },
 };
 
-export const baseURL = 'http://localhost:8000';
+export const baseURL = 'https://dlex-inventory.cyclic.app/';
 export const accessToken = localStorage.getItem('token');
