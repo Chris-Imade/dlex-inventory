@@ -24,7 +24,6 @@ const Register: React.FC = () => {
   const password = useSelector((state: AppState) => state.data.password);
   const [error, setError] = useState<any>(null);
   const [data, setData] = useState<any | null>(null);
-  console.log('data: ', data, 'error: ', error);
 
   const navigation = useNavigate();
 
@@ -32,21 +31,12 @@ const Register: React.FC = () => {
 
   if (data) {
     const { status } = data;
-    console.log(status);
     if (status === 201) {
       navigation('/login');
     }
   }
 
   const handleSubmit = () => {
-    console.log(
-      'email: ',
-      email,
-      'password: ',
-      password,
-      'username: ',
-      username
-    );
 
     const registerUser = async () => {
       try {

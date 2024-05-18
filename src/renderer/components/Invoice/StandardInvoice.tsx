@@ -298,7 +298,7 @@ const StandardInvoice: React.FC<StandardInvoiceProp> = ({ data }) => {
             }}
           >
             <td>Account #:</td>
-            <td>{serviceProvider?.paymentInfo[0]?.accountNumber}</td>
+            <td>{serviceProvider?.paymentInfo && serviceProvider?.paymentInfo?.accountNumber}</td>
           </tr>
           <tr
             style={{
@@ -308,7 +308,7 @@ const StandardInvoice: React.FC<StandardInvoiceProp> = ({ data }) => {
             }}
           >
             <td>A/C Name:</td>
-            <td>{serviceProvider?.paymentInfo[0]?.accountName}</td>
+            <td>{serviceProvider?.paymentInfo && serviceProvider?.paymentInfo?.accountName}</td>
           </tr>
           <tr
             style={{
@@ -318,7 +318,7 @@ const StandardInvoice: React.FC<StandardInvoiceProp> = ({ data }) => {
             }}
           >
             <td>Bank Details:</td>
-            <td>{serviceProvider?.paymentInfo[0]?.bankName}</td>
+            <td>{serviceProvider?.paymentInfo && serviceProvider?.paymentInfo?.bankName}</td>
           </tr>
         </table>
       </div>
@@ -332,7 +332,7 @@ const StandardInvoice: React.FC<StandardInvoiceProp> = ({ data }) => {
             className="w-[9rem] flex justify-center mt-1"
             style={{ fontFamily: fonts.family.regular }}
           >
-            Authorized Sign
+            Authority Sign
           </p>
         </div>
         <div className={`bg-[${colors.primary}] w-[16rem] h-1`}></div>

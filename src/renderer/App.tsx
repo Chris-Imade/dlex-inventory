@@ -269,7 +269,7 @@ export default function App() {
         // Device is online, synchronize pending data
         await synchronizePendingData();
       }
-    }, 3000);
+    }, 1800000);
 
     // Clear the interval on component unmount
     return () => clearInterval(interval);

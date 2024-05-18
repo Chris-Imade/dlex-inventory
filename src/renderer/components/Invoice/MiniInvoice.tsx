@@ -167,7 +167,7 @@ const MiniInvoice: React.FC<StandardInvoiceProp> = ({ data }) => {
             Account #:
           </h1>
           <p style={{ fontFamily: fonts.family.regular, fontSize: 12 }}>
-            {serviceProvider?.paymentInfo[0]?.accountNumber}
+            {serviceProvider?.paymentInfo && serviceProvider?.paymentInfo?.accountNumber}
           </p>
         </div>
         <div className="flex items-center justify-between mt-2">
@@ -175,7 +175,7 @@ const MiniInvoice: React.FC<StandardInvoiceProp> = ({ data }) => {
             A/C Name:
           </h1>
           <p style={{ fontFamily: fonts.family.regular, fontSize: 12 }}>
-            {serviceProvider?.paymentInfo[0]?.accountName}
+            {serviceProvider?.paymentInfo && serviceProvider?.paymentInfo?.accountName}
           </p>
         </div>
         <div className="flex items-center justify-between mt-2">
@@ -183,7 +183,7 @@ const MiniInvoice: React.FC<StandardInvoiceProp> = ({ data }) => {
             Bank Details:
           </h1>
           <p style={{ fontFamily: fonts.family.regular, fontSize: 12 }}>
-            {serviceProvider?.paymentInfo[0]?.bankName}
+            {serviceProvider?.paymentInfo && serviceProvider?.paymentInfo?.bankName}
           </p>
         </div>
         <span

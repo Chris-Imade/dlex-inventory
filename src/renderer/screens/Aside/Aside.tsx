@@ -71,7 +71,7 @@ const Aside = () => {
                 }
                 style={{ fontFamily: fonts.family.medium, fontSize: 12 }}
               >
-                {parsedSP.username.split('')[0].toUpperCase()}
+                {parsedSP?.username.split('')[0].toUpperCase()}
               </div>
               {showDelayedItems && (
                 <div>
@@ -82,7 +82,7 @@ const Aside = () => {
                       color: colors.white,
                     }}
                   >
-                    {parsedSP.username}
+                    {parsedSP?.username}
                   </h3>
                   <h5
                     style={{
@@ -234,7 +234,7 @@ const Aside = () => {
             </Link>
             <button
               onClick={() => {
-                localStorage.removeItem('token');
+                localStorage.clear();
                 location.reload();
               }}
               style={{
@@ -280,7 +280,7 @@ const Aside = () => {
                   }
                   style={{ fontFamily: fonts.family.medium, fontSize: 12 }}
                 >
-                  {parsedSP.username.split('')[0].toUpperCase()}
+                  {parsedSP?.username.split('')[0].toUpperCase()}
                 </div>
               )}
               {showDelayedItems && (
@@ -292,7 +292,7 @@ const Aside = () => {
                       color: colors.white,
                     }}
                   >
-                    {isSyncing ? 'Syncing' : parsedSP.username}
+                    {isSyncing ? 'Syncing' : parsedSP?.username}
                   </h3>
                 </div>
               )}
@@ -324,7 +324,7 @@ const Aside = () => {
                 }
                 style={{ fontFamily: fonts.family.medium, fontSize: 12 }}
               >
-                {parsedSP.username.split('')[0].toUpperCase()}
+                {parsedSP?.username.split('')[0].toUpperCase()}
               </div>
             </div>
 
@@ -431,7 +431,7 @@ const Aside = () => {
                   }
                   style={{ fontFamily: fonts.family.medium, fontSize: 12 }}
                 >
-                  {parsedSP.username.split('')[0].toUpperCase()}
+                  {parsedSP?.username.split('')[0].toUpperCase()}
                 </div>
               )}
             </div>

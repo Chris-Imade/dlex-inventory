@@ -9,6 +9,7 @@ import {
   setTransactionProducts,
 } from 'renderer/Redux/Splice/appSlice';
 import { useImageFormat } from 'renderer/hooks/useImageFormat';
+import { formatToCurrency } from 'renderer/hooks/formatToCurrency';
 
 const ProductsCartCard: React.FC<ProductCartCardProp> = ({ item, index }) => {
   const [itemCount, setItemCount] = useState<number>(1);
@@ -58,13 +59,13 @@ const ProductsCartCard: React.FC<ProductCartCardProp> = ({ item, index }) => {
             <h4 style={{ fontFamily: fonts.family.regular }}>
               Price:{' '}
               <span className="text-green-500 text-xl">
-                ₦{item?.discountPrice}
+                {formatToCurrency(item?.discountPrice)}
               </span>
             </h4>
             <h5>
               Original Price:{' '}
               <div style={{ textDecoration: 'line-through' }}>
-                ₦{item?.price}
+                {formatToCurrency(item?.price)}
               </div>
             </h5>
           </div>

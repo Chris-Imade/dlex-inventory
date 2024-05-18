@@ -85,7 +85,7 @@ const Dashboard = () => {
               fontFamily: fonts.family.medium,
             }}
           >
-            Hello, {parsedSP.username}
+            Hello, {parsedSP?.username}
           </h1>
         </div>
         <div className="relative">
@@ -108,7 +108,7 @@ const Dashboard = () => {
         }
       >
         <div className="mr-4">
-          <Statistics type={'Total Transactions'} value={totalSales} />
+          <Statistics type={'Total Sales'} value={totalSales} />
         </div>
         <div className="mr-4">
           <Statistics type={'Work in progress'} value={workInProgress} />

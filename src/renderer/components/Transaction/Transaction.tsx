@@ -89,7 +89,7 @@ const Transaction: React.FC<TransactionListProps> = ({ item }) => {
             relative
           "
       >
-        <div className="flex items-center">
+        <div className="flex items-center w-[8rem]">
           <div className="w-[32px] h-[32px] rounded-full bg-[#F2E7FC] flex justify-center items-center">
             <img width={20} height={20} src={images.profile} alt="" />
           </div>

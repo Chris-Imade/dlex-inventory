@@ -13,7 +13,7 @@ export const images = {
   settings: require('./settings-outline.png'),
   settings_inactive: require('./settings-offline.png'),
   search: require('./search.png'),
-  total_sales: require('./sales.png'),
+  total_sales: require('./transaction.png'),
   progress: require('./progress.png'),
   completed: require('./complete.png'),
   imgThumbnail: require('./img.png'),

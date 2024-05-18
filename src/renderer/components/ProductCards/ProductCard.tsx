@@ -15,8 +15,7 @@ const ProductCard: React.FC<productCardProps> = ({
       className="
             border-[1px]
             border-solid
-            p-[20px]
-            rounded-t-md
+            rounded-md
             hover:shadow-lg
             hover:cursor-pointer
             transition-all
@@ -26,14 +25,15 @@ const ProductCard: React.FC<productCardProps> = ({
             flex
             items-center,
             bg-white
-            w-[350px]
+            w-[400px]
+            overflow-hidden
         "
     >
       {image ? (
         <img
           src={`${imageFormat}${image}`}
-          width={130}
-          className="h-[130px] object-cover"
+          width={150}
+          className="h-[150px] object-cover"
           alt=""
         />
       ) : (
@@ -45,13 +45,13 @@ const ProductCard: React.FC<productCardProps> = ({
         />
       )}
 
-      <div>
+      <div className='p-[10px]'>
         <h3
           style={{
-            fontSize: 14,
             marginLeft: 10,
             fontFamily: fonts.family.medium,
           }}
+          className='text-slate-700 text-lg'
         >
           {name}
         </h3>
@@ -62,6 +62,7 @@ const ProductCard: React.FC<productCardProps> = ({
               marginLeft: 10,
               fontFamily: fonts.family.medium,
             }}
+            className='text-slate-500 text-sm'
           >
             Discount Price: {formatToCurrency(discountPrice)}
           </h3>
@@ -71,6 +72,7 @@ const ProductCard: React.FC<productCardProps> = ({
               marginLeft: 10,
               fontFamily: fonts.family.medium,
             }}
+            className='text-slate-500 text-sm'
           >
             Original Price: {formatToCurrency(price)}
           </h3>

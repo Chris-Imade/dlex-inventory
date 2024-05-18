@@ -95,6 +95,7 @@ const Settings: React.FC = () => {
     };
     event.preventDefault();
     if (navigator.onLine) {
+      setLoadingPaymentInfo(true);
       // Update Bank Information here
       // make sure we have the user's Id
       try {
@@ -107,13 +108,14 @@ const Settings: React.FC = () => {
               'Content-Type': 'application/json',
               'ngrok-skip-browser-warning': '69420',
             },
-            body: JSON.stringify({ paymentInfo: { ...paymentUpdate } }),
+            body: JSON.stringify({ paymentInfo: paymentUpdate }),
           }
         );
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
         const result = await response.json();
+        console.log(result);
         setPaymentData(result);
         setPaymentError(null);
         setLoadingPaymentInfo(false);

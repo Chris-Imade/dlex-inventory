@@ -32,10 +32,10 @@ const NewTransaction = () => {
   const parsedUserId = userId && JSON.parse(userId);
 
   const dispatch = useDispatch();
+  const uniqueId = uuidv4();
 
   // Function to save pending transaction to local storage
   const savePendingTransaction = (transactionData: any) => {
-    const uniqueId = uuidv4();
 
     // create an object to append uniqueIdentifier to
     const transactionWithUUID = {
@@ -72,6 +72,7 @@ const NewTransaction = () => {
       priority,
       deadline,
       desc,
+      uniqueIdentifier: uniqueId
     };
 
     if (

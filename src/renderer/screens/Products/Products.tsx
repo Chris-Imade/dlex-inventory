@@ -12,6 +12,7 @@ import { images } from '../../../../assets/images';
 import { useSelector } from 'react-redux';
 import { AppState } from 'renderer/Redux/store';
 import { useImageFormat } from 'renderer/hooks/useImageFormat';
+import { formatToCurrency } from 'renderer/hooks/formatToCurrency';
 
 const Products = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -153,7 +154,7 @@ const Products = () => {
             return (
               <div
                 key={_}
-                className={`relative border-solid border-[1px] border-slate-200 rounded-lg p-3 hover:shadow-md shadow-sm bg-white flex max-w-[35rem] min-w-[35rem] ${
+                className={`hover:cursor-pointer relative border-solid border-[1px] border-slate-200 rounded-lg overflow-hidden hover:shadow-md shadow-sm bg-white flex max-w-[35rem] min-w-[35rem] ${
                   _ % 2 !== 0 ? 'lg:ml-[30px]' : 0
                 }`}
                 style={{
@@ -175,22 +176,22 @@ const Products = () => {
                     alt=""
                   />
                 )}
-                <div className="ml-5 mt-6">
+                <div className="p-3">
                   <h4
                     style={{
-                      fontSize: 24,
                       fontFamily: fonts.family.medium,
                     }}
+                    className='text-slate-700 text-xl'
                   >
                     {item.name}
                   </h4>
-                  <h4 style={{ fontFamily: fonts.family.regular }}>
+                  <h4 style={{ fontFamily: fonts.family.regular }} className='text-slate-500 text-sm'>
                     Price:{' '}
                     <span className="text-green-500 text-xl">
-                      ₦{item?.discountPrice}
+                      {formatToCurrency(item?.discountPrice)}
                     </span>
                   </h4>
-                  <h5>Original Price: ₦{item?.price}</h5>
+                  <h5 className='text-slate-500 text-sm'>Original Price: {formatToCurrency(item?.price)}</h5>
                 </div>
 
                 <div className="flex">

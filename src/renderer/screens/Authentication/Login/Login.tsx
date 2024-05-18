@@ -13,14 +13,10 @@ const Login: React.FC = () => {
   const password = useSelector((state: AppState) => state.data.password);
   const dispatch = useDispatch();
 
-  console.log(username, password);
-
   const [error, setError] = useState<any>(null);
   const [data, setData] = useState<any | null>(null);
   const [rawData, setRawData] = useState<any | null>(null);
-  console.log('data: ', data, 'error: ', error?.status);
 
-  console.log('data from app state: ', data);
 
   if (data) {
     const { token } = data;
@@ -28,12 +24,10 @@ const Login: React.FC = () => {
     localStorage.setItem('token', token);
     const localToken = localStorage.getItem('token');
     const parsedToken = localStorage.getItem('token');
-    console.log(token);
     window.location.reload();
   }
 
   const handleSubmit = () => {
-    console.log('password: ', password, 'username: ', username);
 
     const registerUser = async () => {
       try {
@@ -45,7 +39,6 @@ const Login: React.FC = () => {
           body: JSON.stringify({ username, password }),
         });
         setRawData(response);
-        console.log(response);
         if (!response.ok) {
           throw new Error('Response was not ok!');
         }
